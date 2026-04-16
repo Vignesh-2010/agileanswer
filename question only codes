@@ -1,0 +1,9 @@
+For the java application automate the continuous integration process using Jenkins.  Create a Maven-based application adhering to the standard Maven directory structure.  Write the code in Visual Studio and push it to your GITHUB repository. 
+ Modify the code and commit the updates back in GITHUB.
+  Using Jenkins configure the job as pipeline and create the stages for the Continuous Integration process. 
+ Checkout GITHUB
+  Test using JUNIT testing. 
+ Build using Maven
+  Create Docker image
+  Push to Docker Hub 
+ To implement the Matrix Multiplication 
