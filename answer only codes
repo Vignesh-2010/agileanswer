@@ -1,0 +1,243 @@
+# 🪜 STEP 1: Create Maven Project (Matrix Multiplication)
+
+### 📁 Project Structure (IMPORTANT for report)
+
+matrix-app/
+ ├── pom.xml
+ └── src/
+     ├── main/java/com/example/Matrix.java
+     └── test/java/com/example/MatrixTest.java
+
+---
+
+## 🔹 Matrix Multiplication Code
+
+### Matrix.java
+
+package com.example;
+
+public class Matrix {
+    public static int[][] multiply(int[][] a, int[][] b) {
+        int r1 = a.length;
+        int c1 = a[0].length;
+        int c2 = b[0].length;
+
+        int[][] result = new int[r1][c2];
+
+        for (int i = 0; i < r1; i++) {
+            for (int j = 0; j < c2; j++) {
+                for (int k = 0; k < c1; k++) {
+                    result[i][j] += a[i][k] * b[k][j];
+                }
+            }
+        }
+        return result;
+    }
+}
+
+---
+
+## 🔹 JUnit Test
+
+### MatrixTest.java
+
+package com.example;
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class MatrixTest {
+
+    @Test
+    public void testMultiply() {
+        int[][] a = {{1,2},{3,4}};
+        int[][] b = {{5,6},{7,8}};
+
+        int[][] result = Matrix.multiply(a, b);
+
+        assertEquals(19, result[0][0]);
+        assertEquals(22, result[0][1]);
+        assertEquals(43, result[1][0]);
+        assertEquals(50, result[1][1]);
+    }
+}
+
+---
+
+## 🔹 pom.xml (IMPORTANT)
+
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.example</groupId>
+    <artifactId>matrix-app</artifactId>
+    <version>1.0</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
+
+---
+
+# 🪜 STEP 2: Push to GitHub
+
+### Commands:
+
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/your-username/matrix-app.git
+git push -u origin main
+
+👉 Then modify code (example: change values) and:
+
+git commit -am "Updated logic"
+git push
+
+---
+
+# 🪜 STEP 3: Setup Jenkins
+
+### 🔹 Install Tools in Jenkins
+
+Go to:
+
+Manage Jenkins → Global Tool Configuration
+
+Add:
+
+* JDK
+* Maven
+* Git
+
+---
+
+### 🔹 Add Credentials (IMPORTANT FOR VIVA)
+
+Manage Jenkins → Credentials → Global → Add Credentials
+
+Add:
+
+* GitHub username/password OR token
+* Docker Hub credentials
+
+---
+
+# 🪜 STEP 4: Create Jenkins Pipeline Job
+
+New Item → Pipeline → Name: matrix-ci
+
+---
+
+# 🪜 STEP 5: Write Jenkins Pipeline Code
+
+### 📜 Jenkinsfile
+
+pipeline {
+    agent any
+
+    tools {
+        jdk 'JDK'
+        maven 'Maven'
+    }
+
+    environment {
+        DOCKER_IMAGE = "yourdockerhubusername/matrix-app"
+    }
+
+    stages {
+
+        stage('Checkout GitHub') {
+            steps {
+                git 'https://github.com/your-username/matrix-app.git'
+            }
+        }
+
+        stage('Test (JUnit)') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('Build (Maven)') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $DOCKER_IMAGE .'
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-cred',
+                    usernameVariable: 'USER',
+                    passwordVariable: 'PASS')]) {
+
+                    sh 'echo $PASS | docker login -u $USER --password-stdin'
+                    sh 'docker push $DOCKER_IMAGE'
+                }
+            }
+        }
+    }
+}
+
+
+# 🪜 STEP 6: Create Dockerfile
+
+### Dockerfile
+
+FROM openjdk:17
+COPY target/matrix-app-1.0.jar app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
+
+---
+
+# 🪜 STEP 7: Run Pipeline
+
+Click:
+
+Build Now
+
+---
+
+# ✅ EXPECTED OUTPUT
+
+✔️ Code pulled from GitHub
+✔️ JUnit tests passed
+✔️ Maven build successful
+✔️ Docker image created
+✔️ Image pushed to Docker Hub
+
+---
+
+# 🧾 ALGORITHM (for report)
+
+1. Create Maven project for matrix multiplication.
+2. Write Java code and JUnit test cases.
+3. Push project to GitHub repository.
+4. Configure Jenkins tools and credentials.
+5. Create pipeline job in Jenkins.
+6. Add stages: checkout, test, build, Docker build, push.
+7. Execute pipeline.
+8. Verify successful CI process.
+
+
+
+
+IF ANY ERROR YOU HAVE IN RETURN CREATE A NEW FILE AND MESSAGE ME
+
+IF ANY ERROR YOU HAVE IN RETURN CREATE A NEW FILE AND MESSAGE ME
+IF ANY ERROR YOU HAVE IN RETURN CREATE A NEW FILE AND MESSAGE ME
+IF ANY ERROR YOU HAVE IN RETURN CREATE A NEW FILE AND MESSAGE ME
+
+---
